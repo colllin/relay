@@ -465,7 +465,7 @@ function createContainerComponent(
         if (this.context.relay !== nextContext.relay) {
           this._cleanup();
         }
-        return this._initialize(
+        let stateToSet = this._initialize(
           nextProps,
           nextContext,
           resetPropOverridesForVariables(
@@ -475,6 +475,14 @@ function createContainerComponent(
           ),
           state.rawVariables
         );
+        if (nextContext.relay.environment !== this.context.relay.environment) {
+          stateToSet.relayProp = {
+            ...stateToSet.relayProp,
+            applyUpdate: nextContext.relay.environment.applyUpdate,
+            commitUpdate: nextContext.relay.environment.commitUpdate,
+          };
+        }
+        return stateToSet;
       });
     }
 
